@@ -997,6 +997,15 @@ function isAddCommand(hashtagCommand) {
 	return false;
 }
 
+// fillWholeGrid takes in a color and fills the whole grid with that color
+function fillWholeGrid(color) {
+	for (let r = 0; r < MAXROWS; r++) {
+		for (let c = 0; c < MAXCOLS; c++) {
+			updateCellColor(r, c, color);
+		}
+	}
+}
+
 // computeRules takes in a string `s` and parses `s` and extracts the rules 
 // (including comments!) from s
 function computeRules(s)
@@ -1047,12 +1056,31 @@ function computeRules(s)
 			var commaIndex = ruleStr.indexOf(',');
 			var rightParensIndex = ruleStr.indexOf(')');
 
-			var row = ruleStr.substring(leftParensIndex + 1, commaIndex);
-			var col = ruleStr.substring(commaIndex + 1, rightParensIndex);
+			var row = ruleStr.substring(leftParensIndex + 1, commaIndex).trim();
+			var col = ruleStr.substring(commaIndex + 1, rightParensIndex).trim();
 
 			var cellColor = (isAddCommand(ruleStr)) ? WALL_COLOR : CLEAR_COLOR;
 
-			updateCellColor(row, col, cellColor);
+			// star functionality ⭐ (defaults to (int,int) case)
+			if (row === "*") {
+				if (col === "*") {
+					fillWholeGrid(cellColor);
+				}
+				else {
+					for (let rowIndex = 0; rowIndex < MAXROWS; rowIndex++) {
+						updateCellColor(rowIndex, parseInt(col), cellColor);
+					}
+				}
+			}
+			// row is a number! now we should check if col is a number or star
+			else if (col === "*") {
+				for (let colIndex = 0; colIndex < MAXCOLS; colIndex++) {
+					updateCellColor(parseInt(row), colIndex, cellColor);
+				}
+			}
+			else {
+				updateCellColor(parseInt(row), parseInt(col), cellColor);
+			}
 		}
 
 		// throw out anything at or after the first # (commenting...)
