@@ -5,6 +5,8 @@ Hashtag commands allow for programmatic control of Picobot's environment without
 
 ## New and Improved Features
 
+### Hashtag Commands
+
 ➡️ To add a `Wall` cell at row `X` and column `Y`, use the following command:
 ```
 # add (X,Y)
@@ -38,6 +40,10 @@ Or delete the whole grid with this:
 ```
 # sub (*,*)
 ```
+
+### Wrap-Around Functionality
+
+Picobot no longer needs any walls at the beginning of every traversal, as it now wraps around once it hits the boundaries of the grid.
 
 ## How to Run
 
