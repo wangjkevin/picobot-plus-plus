@@ -27,7 +27,16 @@ To delete a line on row `X`, use the same command, replacing `add` with `sub`.
 ```
 To delete a line on row `Y`, use the same command, replacing `add` with `sub`.
 
-_(You can think of the * as "anything", taking inspiration from RegExes :))_
+_(You can think of the `*` as "anything", taking inspiration from RegExes :))_
+
+On that note, you can fill the whole grid like this:
+```
+# add (*,*)
+```
+Or delete the whole grid with this:
+```
+# sub (*,*)
+```
 
 To run Picobot++, simply clone the respository using `git clone` and open up the `html` file. We hope you'll have fun guiding Picobot through even weirder, more bizarre worlds! 🎉
 
