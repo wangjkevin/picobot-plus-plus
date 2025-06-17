@@ -259,10 +259,6 @@ var ROBOT_COLOR = 2
 var WALL_COLOR = 1
 var CLEAR_COLOR = 0
 
-// nasty, nasty globals
-var ADD_IDENTIFIER = "# add (";
-var SUB_IDENTIFIER = "# sub (";
-
 function updateCellColor( r, c, colorIndex )
 {
     currentCells[r][c] = colorIndex;
@@ -1028,7 +1024,6 @@ function fillWholeGrid(color) {
 // (including comments!) from s
 function computeRules(s)
 {
-
 	// convert tabs to spaces
 	// given that this is a browser, it's not clear
 	// how you would even enter a tab, but anyway...
