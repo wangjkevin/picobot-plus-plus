@@ -259,6 +259,10 @@ var ROBOT_COLOR = 2
 var WALL_COLOR = 1
 var CLEAR_COLOR = 0
 
+// nasty, nasty globals
+var ADD_IDENTIFIER = "# add (";
+var SUB_IDENTIFIER = "# sub (";
+
 function updateCellColor( r, c, colorIndex )
 {
     currentCells[r][c] = colorIndex;
@@ -957,6 +961,41 @@ function checkAndSetNewRule(state,surrList,move,cookieAction,newstate,linenum,ru
     return reply;
 }
 
+// given a tuple as a string, checks to see if it is a tuple (without any spaces)
+function isTuple(str) {
+	if (str.length >= 5 &&
+		str[0] === '(' &&
+		str[str.length - 1] === ')' &&
+		str.indexOf(',') !== -1) {
+		return true;
+	}
+
+	return false;
+}
+
+function isHashtagCommand(ruleStr) {
+	var tokens = ruleStr.split(' ');
+	var hasValidLength = tokens.length >= 3;
+	var hasValidFormat = (tokens[0] === '#') &&
+						 (tokens[1] === 'add' || tokens[1] === 'sub');
+	
+	if (hasValidLength && hasValidFormat && isTuple(tokens[2])) {
+		return true;
+	}
+
+	return false;
+}
+
+// given a (valid) hashtag command, determines if it's an add command or not 
+// (and thus can determine whether it's a sub command!)
+function isAddCommand(hashtagCommand) {
+	var tokens = hashtagCommand.split(" ");
+	if (tokens[1] === "add") {
+		return true;
+	}
+
+	return false;
+}
 
 // computeRules takes in a string `s` and parses `s` and extracts the rules 
 // (including comments!) from s
@@ -982,6 +1021,9 @@ function computeRules(s)
 	{
 		// the current rule == the current line's string
 		var ruleStr = String(allRules[linenum]);
+
+		console.log(`read line ${linenum}:`, ruleStr);
+
 		returnmessage = "Oops...\n\nOn line number " + linenum + ", which is this:\n   " + ruleStr + "\n\n";
 
 		// on IE we need to remove the '\r' at the end - this is weird!
@@ -991,12 +1033,40 @@ function computeRules(s)
 			ruleStr = ruleStr.substring(0,ruleStr.indexOf('\r')); // get rid of the \r
 		}
 
+		///////////////////////////////////////////////////////////////
+
+		// two cases when a line begins with a #
+		// 1: it has add/sub after it, making it not a comment
+		// 2: it doesn't follow the format of above, thus rendering it a comment...
+
+	    // we've found a # add/sub command!
+		if (isHashtagCommand(ruleStr)) {
+			// locate the indices around the numbers to locate where the numbers are
+			// (note that the numbers can be two digits, which is why we have to be careful!)
+			var leftParensIndex = ruleStr.indexOf('(');
+			var commaIndex = ruleStr.indexOf(',');
+			var rightParensIndex = ruleStr.indexOf(')');
+
+			var row = ruleStr.substring(leftParensIndex + 1, commaIndex);
+			var col = ruleStr.substring(commaIndex + 1, rightParensIndex);
+
+			var cellColor = (isAddCommand(ruleStr)) ? WALL_COLOR : CLEAR_COLOR;
+
+			updateCellColor(row, col, cellColor);
+		}
+
 		// throw out anything at or after the first # (commenting...)
+		// (note that this also throws out the hashtag commands, but we rest assured knowing that we don't
+		// need them anymore since we've already parsed them!)
 		var locationOfComment = ruleStr.indexOf('#');
 		if (locationOfComment != -1)   // there _was_ a comment
 		{
+			// this line turns the string into a blank line...
+			// hence erasing the line from the universe :((
 			ruleStr = ruleStr.substring(0,locationOfComment);
 		}
+
+		///////////////////////////////////////////////////////////////
 
 		// make the whole thing uppercase
 		ruleStr = ruleStr.toUpperCase();
