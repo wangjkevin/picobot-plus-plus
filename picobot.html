@@ -989,7 +989,10 @@ function isHashtagCommand(ruleStr) {
 	var hasValidFormat = (tokens[0] === '#') &&
 						 (tokens[1] === 'add' || tokens[1] === 'sub');
 	
-	if (hasValidLength && hasValidFormat && isTuple(tokens[2])) {
+	// console.log(ruleStr.substring(ruleStr.indexOf("("), ruleStr.indexOf(")") + 1));
+	// console.log(isTuple(ruleStr.substring(ruleStr.indexOf("("), ruleStr.indexOf(")") + 1)));
+
+	if (hasValidLength && hasValidFormat && isTuple(ruleStr.substring(ruleStr.indexOf("("), ruleStr.indexOf(")") + 1))) {
 		return true;
 	}
 
@@ -1046,7 +1049,7 @@ function computeRules(s)
 		// the current rule == the current line's string
 		var ruleStr = String(allRules[linenum]);
 
-		console.log(`read line ${linenum}:`, ruleStr);
+		// console.log(`read line ${linenum}:`, ruleStr);
 
 		returnmessage = "Oops...\n\nOn line number " + linenum + ", which is this:\n   " + ruleStr + "\n\n";
 
