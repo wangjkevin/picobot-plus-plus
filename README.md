@@ -14,3 +14,5 @@ Hashtag commands allow for programmatic control of Picobot's environment without
 ⚠️ Note that there isn't a space between `X` and `Y`. ⚠️
 
 To run Picobot++, simply clone the respository using `git clone` and open up the `html` file. We hope you'll have fun guiding Picobot through even weirder, more bizarre worlds! 🎉
+
+_🙌 Many thanks to Prof. Zachary Dodds and many others for the original implementation of Picobot! 🙌_
