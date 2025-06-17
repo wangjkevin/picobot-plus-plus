@@ -551,6 +551,8 @@ function teleportRobot(direction)
 		}
 	}
 	
+	robot.row = (robot.row + MAXROWS) % MAXROWS;
+	robot.col = (robot.col + MAXCOLS) % MAXCOLS;
 	
 	// clear the cheated map
 	clearVisited();
@@ -623,6 +625,10 @@ function moveRobot(rule)
 	}
 	else return 'Direction of ' + dir + ' not recognized.';
 
+	// WRAP AROUND FUNCTIONALITY
+	newrow = (newrow + MAXROWS) % MAXROWS;
+	newcol = (newcol + MAXCOLS) % MAXCOLS;
+
 	// check that it's not a wall or out of bounds...
 	// we return a nonempty message if we are and
 	// an empty string if everything is OK
@@ -651,28 +657,32 @@ function isWallToN(r,c)
 {
 	var CC = currentCells;
 	//alert('r and c are ' + r + ' '  + c )
-	if (r == 0 || CC[r-1][c] == WALL_COLOR ) return 1;
+	var new_r = ((r - 1) + MAXROWS) % MAXROWS;
+	if (CC[new_r][c] == WALL_COLOR ) return 1;
 	return 0
 }
 
 function isWallToE(r,c)
 {
 	var CC = currentCells;
-	if (c == MAXCOLS-1 || CC[r][c+1] == WALL_COLOR ) return 1;
+	var new_c = ((c + 1) + MAXCOLS) % MAXCOLS;
+	if (CC[r][new_c] == WALL_COLOR ) return 1;
 	return 0
 }
 
 function isWallToW(r,c)
 {
 	var CC = currentCells;
-	if (c == 0 || CC[r][c-1] == WALL_COLOR ) return 1;
+	var new_c = ((c - 1) + MAXCOLS) % MAXCOLS;
+	if (CC[r][new_c] == WALL_COLOR ) return 1;
 	return 0
 }
 
 function isWallToS(r,c)
 {
 	var CC = currentCells;
-	if (r == MAXROWS-1 || CC[r+1][c] == WALL_COLOR ) return 1;
+	var new_r = ((r + 1) + MAXROWS) % MAXROWS;
+	if (CC[new_r][c] == WALL_COLOR ) return 1;
 	return 0
 }
 
@@ -997,10 +1007,15 @@ function isAddCommand(hashtagCommand) {
 	return false;
 }
 
-// fillWholeGrid takes in a color and fills the whole grid with that color
+// fillWholeGrid takes in a color and fills the whole grid with that color, except for where the robot is
 function fillWholeGrid(color) {
 	for (let r = 0; r < MAXROWS; r++) {
 		for (let c = 0; c < MAXCOLS; c++) {
+			// don't destroy the robot!
+			if (r == robot.row && c == robot.col) {
+				continue;
+			}
+			// otherwise we can safely pass through...
 			updateCellColor(r, c, color);
 		}
 	}
