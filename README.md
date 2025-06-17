@@ -13,7 +13,6 @@ Hashtag commands allow for programmatic control of Picobot's environment without
 ```
 # sub (X,Y)
 ```
-⚠️ Note that there isn't a space between `X` and `Y`. ⚠️
 
 There are also special _star_ commands, a subset of the hashtag commands. These commands allow you to draw and delete entire lines on the grid.
 
