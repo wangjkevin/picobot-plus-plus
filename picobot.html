@@ -264,11 +264,17 @@ var CLEAR_COLOR = 0
 var dynawalls = [];
 // keep track of which rule we're on in order to successfully update the dynawalls
 var ruleCounter = 0;
+// keep track of visited cells
+var visited = new Set();
 
 function updateCellColor( r, c, colorIndex )
 {
     currentCells[r][c] = colorIndex;
     drawOneSquare(r,c,COLORS[colorIndex]);
+
+	if (colorIndex == VISITED_COLOR) {
+		visited.add(`(${r}, ${c})`);
+	}
 }
 
 // global variable for current cells
@@ -368,6 +374,7 @@ function fullReset()
 
 	// reset dynawalls
 	dynawalls = [];
+	visited = new Set();
 	ruleCounter = 0;
 }
 
@@ -810,7 +817,10 @@ function updateDynawalls() {
 		if (!wall.isAdd) {
 			show = !show;
 		}
-		var color = (show)? WALL_COLOR : CLEAR_COLOR;
+
+		var nonWallColor = (visited.has(`(${wall.row}, ${wall.col})`))? VISITED_COLOR : CLEAR_COLOR;
+
+		var color = (show)? WALL_COLOR : nonWallColor;
 		updateCellColor(wall.row, wall.col, color);
 
 		console.log("ruleCounter:", ruleCounter);
@@ -1367,6 +1377,7 @@ function computeRules(s)
 
 	}
 
+	// update the positions of the dynawalls as soon as enter is pressed
 	updateDynawalls();
 
 	//return '' + state + ' ' + surrStr + ' ' + arrowStr + ' ' + dirStr + ' ' + newstate;
