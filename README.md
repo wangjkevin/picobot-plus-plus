@@ -65,7 +65,7 @@ _(Note that the default duration is `25` rules, and the default offset is `10` r
 ```
 # sub (X,*) DYNA d=40
 ```
-will initially turn the line on row `X` _off_ for `40` rule executions, but then toggle the line back on for `40` rule executions, toggle off for `40` rule executions, etc.
+will initially turn the line on row `X` _off_ for `40` rule executions, but then toggle the line back on for `40` rule executions, toggle the line off for `40` rule executions, etc.
 
 💥 Dyna commands also work with lines and grids.
 
