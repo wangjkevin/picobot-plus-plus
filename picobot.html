@@ -259,6 +259,12 @@ var ROBOT_COLOR = 2
 var WALL_COLOR = 1
 var CLEAR_COLOR = 0
 
+// for dynamic walls (coined "dynawalls")
+// keep track of all the dynamic walls currently in play
+var dynawalls = [];
+// keep track of which rule we're on in order to successfully update the dynawalls
+var ruleCounter = 0;
+
 function updateCellColor( r, c, colorIndex )
 {
     currentCells[r][c] = colorIndex;
@@ -359,6 +365,10 @@ function fullReset()
         }
     }
     resetBot();
+
+	// reset dynawalls
+	dynawalls = [];
+	ruleCounter = 0;
 }
 
 
@@ -563,7 +573,8 @@ function teleportRobot(direction)
 
 }
 
-
+// moveRobot takes in a rule `rule` and moves the robot and returns a string depending on the 
+// behavior of the robot in its new state
 function moveRobot(rule)
 {
 	var dir = rule[RULE_DIR];
@@ -788,9 +799,35 @@ function getSurroundings()
 						return XXXX;
 }
 
+function updateDynawalls() {
+	console.log("updating dynawalls right now...")
+	for (let wall of dynawalls) {
+		var period = 2 * wall.duration;
+		var position = (ruleCounter + wall.offset) % period;
+
+		// var show = (ruleCounter % wall.duration) === wall.offset;
+		var show = (position < wall.duration);
+		if (!wall.isAdd) {
+			show = !show;
+		}
+		var color = (show)? WALL_COLOR : CLEAR_COLOR;
+		updateCellColor(wall.row, wall.col, color);
+
+		console.log("ruleCounter:", ruleCounter);
+		console.log("wall.duration:", wall.duration);
+		console.log("wall.offset:", wall.offset);
+		console.log(show);
+	}
+}
 
 function update()
 {
+	// update dynawalls
+	ruleCounter++;
+	updateDynawalls();
+	console.log("dynawalls should have updated...");
+	console.log(dynawalls);
+
 	// what is the rule
 	// it's the current robot's state and surr
 	var currentstate = robot.state;
@@ -841,7 +878,6 @@ function update()
 	document.getElementById('state').value = currentstate;
 	document.getElementById('surroundings').value = SURR_TEXT[surr];
 	updateProgress();
-   
 }
 
 
@@ -983,12 +1019,20 @@ function isHashtagCommand(ruleStr) {
 	var tokens = ruleStr.split(' ');
 	var hasValidLength = tokens.length >= 3;
 	var hasValidFormat = (tokens[0] === '#') &&
-						 (tokens[1] === 'add' || tokens[1] === 'sub');
-	
-	// console.log(ruleStr.substring(ruleStr.indexOf("("), ruleStr.indexOf(")") + 1));
-	// console.log(isTuple(ruleStr.substring(ruleStr.indexOf("("), ruleStr.indexOf(")") + 1)));
+						 (tokens[1] === 'add' || tokens[1] === 'sub') &&
+						 (isTuple(ruleStr.substring(ruleStr.indexOf("("), ruleStr.indexOf(")") + 1)));
 
-	if (hasValidLength && hasValidFormat && isTuple(ruleStr.substring(ruleStr.indexOf("("), ruleStr.indexOf(")") + 1))) {
+	if (hasValidLength && hasValidFormat) {
+		return true;
+	}
+
+	return false;
+}
+
+function isDynaCommand(hashtagCommand) {
+	hashtagCommand = hashtagCommand.toLowerCase();
+	tokens = hashtagCommand.split(" ");
+	if (tokens.includes("dyna")) {
 		return true;
 	}
 
@@ -1020,6 +1064,58 @@ function fillWholeGrid(color) {
 	}
 }
 
+function getDurationAndOffset(ruleStr) {
+	var duration = 25;  // recommended duration after trial and error
+	var offset = 10;
+
+	// rudimentary string parsing :,(
+	tokens = ruleStr.split(" ");
+	for (let token of tokens) {
+		if (token.startsWith("d=")) {
+			duration = parseInt(token.slice(2));
+		}
+
+		if (token.startsWith("o=")) {
+			offset = parseInt(token.slice(2));
+		}
+	}
+
+	return [duration, offset];
+}
+
+function processHashtagCommands(ruleStr, row, col, color) {
+	if (row.trim() === "*" || col.trim() === "*") {
+		console.log("    this is also a star command!");
+	}
+
+	var rows = (row.trim() === "*")? [...Array(MAXROWS).keys()] : [row];
+	var cols = (col.trim() === "*")? [...Array(MAXCOLS).keys()] : [col];
+
+	for (let r of rows) {
+		for (let c of cols) {
+			if (isDynaCommand(ruleStr)) {
+				console.log("    this is also a dyna command!");
+				var duration, offset;
+				[duration, offset] = getDurationAndOffset(ruleStr);
+
+				dynawalls.push({
+					isAdd: isAddCommand(ruleStr),
+					row: parseInt(r),
+					col: parseInt(c),
+					duration: duration,
+					offset: offset,
+					origColor: color
+				})
+
+				console.log("adding dynawall:", dynawalls[dynawalls.length - 1]);
+			}
+			else {
+				updateCellColor(parseInt(r), parseInt(c), color);
+			}
+		}
+	}
+}
+
 // computeRules takes in a string `s` and parses `s` and extracts the rules 
 // (including comments!) from s
 function computeRules(s)
@@ -1037,14 +1133,13 @@ function computeRules(s)
 	var numberOfLines = allRules.length;
 	var returnmessage = '';
 
-
 	// loop through them all...
 	for (var linenum=0 ; linenum<numberOfLines ; ++linenum)
 	{
 		// the current rule == the current line's string
 		var ruleStr = String(allRules[linenum]);
 
-		// console.log(`read line ${linenum}:`, ruleStr);
+		console.log(`read line ${linenum}:`, ruleStr);
 
 		returnmessage = "Oops...\n\nOn line number " + linenum + ", which is this:\n   " + ruleStr + "\n\n";
 
@@ -1063,6 +1158,9 @@ function computeRules(s)
 
 	    // we've found a # add/sub command!
 		if (isHashtagCommand(ruleStr)) {
+			console.log("this is a hashtag command!");
+			ruleStr = ruleStr.toLowerCase();
+
 			// locate the indices around the numbers to locate where the numbers are
 			// (note that the numbers can be two digits, which is why we have to be careful!)
 			var leftParensIndex = ruleStr.indexOf('(');
@@ -1074,26 +1172,7 @@ function computeRules(s)
 
 			var cellColor = (isAddCommand(ruleStr)) ? WALL_COLOR : CLEAR_COLOR;
 
-			// star functionality ⭐ (defaults to (int,int) case)
-			if (row === "*") {
-				if (col === "*") {
-					fillWholeGrid(cellColor);
-				}
-				else {
-					for (let rowIndex = 0; rowIndex < MAXROWS; rowIndex++) {
-						updateCellColor(rowIndex, parseInt(col), cellColor);
-					}
-				}
-			}
-			// row is a number! now we should check if col is a number or star
-			else if (col === "*") {
-				for (let colIndex = 0; colIndex < MAXCOLS; colIndex++) {
-					updateCellColor(parseInt(row), colIndex, cellColor);
-				}
-			}
-			else {
-				updateCellColor(parseInt(row), parseInt(col), cellColor);
-			}
+			processHashtagCommands(ruleStr, row, col, cellColor);
 		}
 
 		// throw out anything at or after the first # (commenting...)
@@ -1287,6 +1366,8 @@ function computeRules(s)
 		}
 
 	}
+
+	updateDynawalls();
 
 	//return '' + state + ' ' + surrStr + ' ' + arrowStr + ' ' + dirStr + ' ' + newstate;
 	if (DEBUG) return returnmessage; // show accumulated information, if we're debugging
