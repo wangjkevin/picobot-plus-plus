@@ -234,22 +234,32 @@ try
 {
 
 
-
+/* drawOneSquare takes in three arguments:
+ *     - (int) r
+ *     - (int) c
+ *     - (string) hexcolor
+ * and colors the location at row `r` and column `c` to be the specified `hexcolor`
+ */
 function drawOneSquare(r, c, hexcolor)
 {
     divName = 'r' + r + 'c' + c;
     document.getElementById(divName).style.backgroundColor = hexcolor;
 }
 
+// internal clock...tick tick tick
 var DEBUG = 0; // set to 0 to turn off debugging
 var TIMING_DELAY = 20;
 
+// how big we want our grid to be
 var MAXROWS = 25;
 var MAXCOLS = 25;
 
+// because picobot is a cookie monster...
 var MAXCOOKIES = 625
 var cookies_remaining = MAXCOOKIES
+// otherwise picobot wouldn't be turing complete!
 
+// color the world!!!
 var COLORS = ["white","blue","lime","red","#808080","aaaaff","ff11dd"]
 var COOKIE_COLOR = 6
 var DONE_COLOR = 5
@@ -267,6 +277,13 @@ var ruleCounter = 0;
 // keep track of visited cells
 var visited = new Set();
 
+/* updateCellColor takes in three arguments:
+ *     - (int) r
+ *     - (int) c
+ *     - (int) colorIndex
+ * and colors in the square cell at row `r`, column `c` with the color indicated by
+ * `colorIndex`
+ */
 function updateCellColor( r, c, colorIndex )
 {
     currentCells[r][c] = colorIndex;
@@ -304,8 +321,9 @@ function drawMap( map )
     }
 }
 
-
-// Toggles the existance of a wall in a particular location
+/* toggle_wall takes in two arguments, (int) `row` and (int) `col`, and turns the cell at
+ * row `row` and column `col` to a wall cell
+ */
 function toggle_wall(row,col)
 {
 	if (currentCells[row][col] != ROBOT_COLOR);
@@ -318,7 +336,9 @@ function toggle_wall(row,col)
         clearVisited();
 }
 
-// counts any particular type of square in a map
+/* countSquares takes in two arguments, (Array) `m` and (int) `colorIndex`, and returns total number of 
+ * cells of the color indicated by `colorIndex` in the map `m`
+ */
 function countSquares( m, colorIndex )
 {
     var total = 0;
@@ -336,7 +356,8 @@ function countSquares( m, colorIndex )
     return total;
 }
 
-// clears the map of all visitted cells
+/* clearVisited takes in no arguments and clears the map of all visited cells
+ */
 function clearVisited()
 {
     for (var r = 0 ; r < MAXROWS ; ++r)
@@ -355,7 +376,8 @@ function clearVisited()
 	updateProgress;
 }
 
-// blanks the map and resets the robot
+/* fullReset takes in no arguments and blanks the map and resets the robot and dynawalls
+ */
 function fullReset()
 {
     for (var r = 0 ; r < MAXROWS ; ++r)
@@ -439,12 +461,16 @@ RULE_LINENUM = 3;
 RULE_TEXT = 4;
 RULE_COOKIE = 5; // index of the string the user typed
 
-
+/* cookieLocation takes in two arguments, (int) `row` and (int) `col`, and returns
+ * the location of that cookie using a tricky yet simple and neat formula
+ */
 function cookieLocation(row,col)
 {
 	return col + MAXCOLS*row;
 }
 
+/* drawCookies takes in no arguments and draws all the cookies in the array `cookies`
+ */
 function drawCookies()
 {
 	var the_cookie = 0
@@ -459,11 +485,17 @@ function drawCookies()
 	}
 }
 
+/* randomInRange takes in one argument, (int) `N`, and returns an integer
+ * between 0 and `N`, inclusive
+ */
 function randomInRange(N)
 {
 	return Math.floor(N*Math.random())
 }
 
+/* resetBot takes in no arguments and...resets the bot. it gives the robot a new random location on the grid
+ * and re-updates the squares on the grid
+ */
 function resetBot()
 {
 	var nrow;
@@ -488,6 +520,9 @@ function resetBot()
 	updateProgress();
 }
 
+/* teleportRobot takes in one argument, (string) `direction`, and attempts to move the robot in
+ * that direction if the move is valid
+ */
 function teleportRobot(direction)
 {
 // will move the robot if it's legal to...
@@ -581,8 +616,9 @@ function teleportRobot(direction)
 
 }
 
-// moveRobot takes in a rule `rule` and moves the robot and returns a string depending on the 
-// behavior of the robot in its new state
+/* moveRobot takes in one argument, (string) `rule`, and moves the robot and returns a string depending on the 
+ * behavior of the robot in its new state
+ */
 function moveRobot(rule)
 {
 	var dir = rule[RULE_DIR];
@@ -668,6 +704,9 @@ function moveRobot(rule)
 
 }
 
+/* isWallToN takes in two arguments, (int) `r` and (int) `c`, and checks if there is a wall to
+ * the north of the cell at row `r`, column `c`; it returns 1 if there is a wall and 0 otherwise
+ */
 function isWallToN(r,c)
 {
 	var CC = currentCells;
@@ -677,6 +716,9 @@ function isWallToN(r,c)
 	return 0
 }
 
+/* isWallToE takes in two arguments, (int) `r` and (int) `c`, and checks if there is a wall to
+ * the east of the cell at row `r`, column `c`; it returns 1 if there is a wall and 0 otherwise
+ */
 function isWallToE(r,c)
 {
 	var CC = currentCells;
@@ -685,6 +727,9 @@ function isWallToE(r,c)
 	return 0
 }
 
+/* isWallToW takes in two arguments, (int) `r` and (int) `c`, and checks if there is a wall to
+ * the west of the cell at row `r`, column `c`; it returns 1 if there is a wall and 0 otherwise
+ */
 function isWallToW(r,c)
 {
 	var CC = currentCells;
@@ -693,6 +738,9 @@ function isWallToW(r,c)
 	return 0
 }
 
+/* isWallToS takes in two arguments, (int) `r` and (int) `c`, and checks if there is a wall to
+ * the south of the cell at row `r`, column `c`; it returns 1 if there is a wall and 0 otherwise
+ */
 function isWallToS(r,c)
 {
 	var CC = currentCells;
@@ -701,6 +749,9 @@ function isWallToS(r,c)
 	return 0
 }
 
+/* getSurroundings takes in no arguments and returns the surroundings (NEWS format)
+ * of the current cell Picobot is on
+ */
 function getSurroundings()
 {
 	// look at the currentCells array and robot to 
@@ -807,8 +858,10 @@ function getSurroundings()
 						return XXXX;
 }
 
+/* updateDynawalls takes in no arguments and is called in `update` to update the dynawalls
+ * (since the re/disappearance of dynawalls depend on the number of rules executed!)
+ */
 function updateDynawalls() {
-	console.log("updating dynawalls right now...")
 	for (let wall of dynawalls) {
 		var period = 2 * wall.duration;
 		var position = (ruleCounter + wall.offset) % period;
@@ -823,21 +876,17 @@ function updateDynawalls() {
 
 		var color = (show)? WALL_COLOR : nonWallColor;
 		updateCellColor(wall.row, wall.col, color);
-
-		console.log("ruleCounter:", ruleCounter);
-		console.log("wall.duration:", wall.duration);
-		console.log("wall.offset:", wall.offset);
-		console.log(show);
 	}
 }
 
+/* update takes in no arguments and updates the game state, including the dynawalls, the bot,
+ * and the messages to the client
+ */
 function update()
 {
 	// update dynawalls
 	ruleCounter++;
 	updateDynawalls();
-	console.log("dynawalls should have updated...");
-	console.log(dynawalls);
 
 	// what is the rule
 	// it's the current robot's state and surr
@@ -894,17 +943,25 @@ function update()
 
 var timerID = null
 
+/* go takes in no arguments and is the heart and soul of Picobot...it calls `update`
+ * every `TIMING_DELAY` milliseconds
+ */
 function go()
 {
 	clearInterval(timerID);
 	timerID=setInterval("update()",TIMING_DELAY);
 }
 
+/* stop takes in no arguments and stops the game loop started by `go`
+ */
 function stop()
 {
 	clearInterval(timerID);
 }
 
+/* removeEmptyStrings takes in one argument, (Array) `arr`, and returns a new array
+ * which is a copy of `arr` but without any empty strings...how nice! :)
+ */
 function removeEmptyStrings(arr)
 {
 	// returns an array without empty strings
@@ -917,6 +974,9 @@ function removeEmptyStrings(arr)
 	return newarr
 }
 
+/* addToList takes in two arguments, (Array) `sL` and (int) `n`, and appends all of the ints in sL
+ * added with n to sL
+ */
 function addToList(sL,n)
 {
 	// append all of the ints in sL (with n added) to sL
@@ -928,6 +988,9 @@ function addToList(sL,n)
 	return sL
 }
 
+/* computeSurrFromString takes in one argument, (string) `surrStr`, and returns a list of surroundings
+ * of surrStr or -1 if something catastrophic happened...
+ */
 function computeSurrFromString(surrStr)
 {
 	// must be length 4
@@ -958,6 +1021,9 @@ function computeSurrFromString(surrStr)
 	return surroundingsList
 }
 
+/* computeCookieSeeFromString takes in one argument, `string` cookieSeeStr, and determines whether the bot
+ * should be doing anything if we are on a cookie
+ */
 function computeCookieSeeFromString(cookieSeeStr)
 {
 	if (cookieSeeStr == '*' || cookieSeeStr == '*M') return 0;
@@ -966,6 +1032,9 @@ function computeCookieSeeFromString(cookieSeeStr)
 	else return -1;
 }
 
+/* computeCookieDoFromString takes in one argument, `string` cookieSeeStr, and checks what we should
+ * do to the cookie
+ */
 function computeCookieDoFromString(cookieSeeStr)
 {
 	if (cookieSeeStr == '*') return 0;
@@ -974,6 +1043,8 @@ function computeCookieDoFromString(cookieSeeStr)
 	else return -1;
 }
 
+/* clearRules takes in no arguments and deletes all of the rules in `RULES`, wiping the slate clean
+ */
 function clearRules()
 {
 	var maxstates = RULES.length;
@@ -985,6 +1056,16 @@ function clearRules()
 	}
 }
 
+/* checkAndSetNewRule takes in seven arguments:
+ *     - (int) state
+ *     - (Array) surrList
+ *     - (string) move
+ *     - (int) cookieAction
+ *     - (int) newstate
+ *     - (int) linenum
+ *     - (string) ruleStr
+ * and checks the new rule, and if the rule is okay, then it is set and `RULES` is updated
+ */
 function checkAndSetNewRule(state,surrList,move,cookieAction,newstate,linenum,ruleStr)
 {
     var reply = '';
@@ -1014,7 +1095,9 @@ function checkAndSetNewRule(state,surrList,move,cookieAction,newstate,linenum,ru
     return reply;
 }
 
-// given a tuple as a string, checks to see if it is a tuple (without any spaces)
+/* isTuple takes in one argument, (string) `str`, and determines whether it is a tuple (i.e.
+ * in the form (X,Y)); note that whitespace is allowed
+ */
 function isTuple(str) {
 	if (str.length >= 5 &&
 		str[0] === '(' &&
@@ -1026,6 +1109,9 @@ function isTuple(str) {
 	return false;
 }
 
+/* isHashtagCommand takes in one argument, (string) `ruleStr`, and determinse whether the rule `ruleStr`
+ * is a hashtag command (i.e. in the form # add (X,Y))
+ */
 function isHashtagCommand(ruleStr) {
 	var tokens = ruleStr.split(' ');
 	var hasValidLength = tokens.length >= 3;
@@ -1040,6 +1126,10 @@ function isHashtagCommand(ruleStr) {
 	return false;
 }
 
+/* isDynaCommand takes in one argument, (string) `hashtagCommand`, and determines whether the
+ * hashtag command `hashtagCommand` is a dyna command (a command that dynamically alters cells);
+ * returns true if it is and false otherwise
+ */
 function isDynaCommand(hashtagCommand) {
 	hashtagCommand = hashtagCommand.toLowerCase();
 	tokens = hashtagCommand.split(" ");
@@ -1050,8 +1140,10 @@ function isDynaCommand(hashtagCommand) {
 	return false;
 }
 
-// given a (valid) hashtag command, determines if it's an add command or not 
-// (and thus can determine whether it's a sub command!)
+/* isAddCommand takes in one argument, (string) `hashtagCommand`, and determines whether the
+ * valid hashtag command `hashtagCommand` is an "add" command (i.e. "adds a/many cell/s to the grid),
+ * and hence can also determine whether `hashtagCommand` is also a "sub" command
+ */
 function isAddCommand(hashtagCommand) {
 	var tokens = hashtagCommand.split(" ");
 	if (tokens[1] === "add") {
@@ -1061,20 +1153,10 @@ function isAddCommand(hashtagCommand) {
 	return false;
 }
 
-// fillWholeGrid takes in a color and fills the whole grid with that color, except for where the robot is
-function fillWholeGrid(color) {
-	for (let r = 0; r < MAXROWS; r++) {
-		for (let c = 0; c < MAXCOLS; c++) {
-			// don't destroy the robot!
-			if (r == robot.row && c == robot.col) {
-				continue;
-			}
-			// otherwise we can safely pass through...
-			updateCellColor(r, c, color);
-		}
-	}
-}
-
+/* getDurationAndOffset takes in a dyna command, (string) `ruleStr`, and gets the duration and offset
+ * of the dyna command, if provided. if not provided, the duration defaults to 25 and the offset
+ * defaults to 10
+ */
 function getDurationAndOffset(ruleStr) {
 	var duration = 25;  // recommended duration after trial and error
 	var offset = 10;
@@ -1094,18 +1176,22 @@ function getDurationAndOffset(ruleStr) {
 	return [duration, offset];
 }
 
+/* processHashtagCommands takes in four arguments:
+ *     - (string) ruleStr
+ *     - (int) row
+ *     - (int) col
+ *     - (int) color
+ * and given a hashtag command `ruleStr`, processHashtagCommands parses through `ruleStr`
+ * and appropriately updates the cells according to `ruleStr`; note that this function also handles 
+ * star and dyna commands
+ */
 function processHashtagCommands(ruleStr, row, col, color) {
-	if (row.trim() === "*" || col.trim() === "*") {
-		console.log("    this is also a star command!");
-	}
-
 	var rows = (row.trim() === "*")? [...Array(MAXROWS).keys()] : [row];
 	var cols = (col.trim() === "*")? [...Array(MAXCOLS).keys()] : [col];
 
 	for (let r of rows) {
 		for (let c of cols) {
 			if (isDynaCommand(ruleStr)) {
-				console.log("    this is also a dyna command!");
 				var duration, offset;
 				[duration, offset] = getDurationAndOffset(ruleStr);
 
@@ -1117,18 +1203,22 @@ function processHashtagCommands(ruleStr, row, col, color) {
 					offset: offset,
 					origColor: color
 				})
-
-				console.log("adding dynawall:", dynawalls[dynawalls.length - 1]);
 			}
 			else {
-				updateCellColor(parseInt(r), parseInt(c), color);
+				// don't destroy the robot!
+				if (row == robot.row && col == robot.col) {
+					continue;
+				}
+				// otherwise we can safely pass through...
+				updateCellColor(parseInt(row), parseInt(col), color);
 			}
 		}
 	}
 }
 
-// computeRules takes in a string `s` and parses `s` and extracts the rules 
-// (including comments!) from s
+/* computeRules takes in one argument, (string) `s`, and parses `s` and extracts the rules 
+ * (including comments!) from s
+ */
 function computeRules(s)
 {
 	// convert tabs to spaces
@@ -1169,7 +1259,6 @@ function computeRules(s)
 
 	    // we've found a # add/sub command!
 		if (isHashtagCommand(ruleStr)) {
-			console.log("this is a hashtag command!");
 			ruleStr = ruleStr.toLowerCase();
 
 			// locate the indices around the numbers to locate where the numbers are
@@ -1387,6 +1476,9 @@ function computeRules(s)
 
 }
 
+/* updateProgress takes in no arguments and provides a nice little check-in
+ * about how Picobot is doing! <3
+ */
 function updateProgress()
 {
   var total = countSquares( currentCells, CLEAR_COLOR );
@@ -1402,11 +1494,16 @@ function updateProgress()
 var currentMapIndex = 6;
 var MAPS = [emptymap, mazemap, diamondmap, map3, map4, map5, map6];
 
+/* getCMI takes in no arguments and returns the map index of the current map
+ */
 function getCMI()
 {
   return currentMapIndex;
 }
 
+/* changeMap takes in one argument, (int) `value`, and changes the grid to another map based on the
+ * map index `value`
+ */
 function changeMap(value)
 {
     currentMapIndex += value;
