@@ -7,7 +7,7 @@ Hashtag commands enable programmatic control of Picobot's environment, eliminati
 
 ### Hashtag Commands
 
-#### The Basics
+#### The Basics 🧱
 
 ➡️ To add a `Wall` cell at row `X` and column `Y`, use the following command:
 ```
@@ -18,7 +18,7 @@ Hashtag commands enable programmatic control of Picobot's environment, eliminati
 # sub (X,Y)
 ```
 
-#### Star Commands
+#### Star Commands 💫
 
 There are also special _star_ commands, a subset of the hashtag commands. These commands allow you to draw and delete entire lines on the grid.
 
@@ -45,9 +45,9 @@ Or delete the whole grid with this:
 # sub (*,*)
 ```
 
-#### Dyna Commands
+#### Dyna Commands 💣
 
-In addition to star commands, there are also _dyna_ commands! 💣 Dyna commands allow for _dynamic_ walls.
+In addition to star commands, there are also _dyna_ commands! Dyna commands allow for _dynamic_ walls.
 
 💥 The `DYNA` keyword appended to the end of a hashtag command turns it into a _dyna_ command. To add a dynamic cell on row `X`, column `Y` to Picobot's world, use the following command:
 ```
