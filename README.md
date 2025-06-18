@@ -47,17 +47,20 @@ Or delete the whole grid with this:
 
 #### Dyna Commands
 
-In addition to star commands, there are also _dyna_ commands! Dyna commands allow for _dynamic_ walls.
-To add a dynamic cell on row `X`, column `Y` to Picobot's world, use the following command:
+In addition to star commands, there are also _dyna_ commands! 💣 Dyna commands allow for _dynamic_ walls.
+
+💥 To add a dynamic cell on row `X`, column `Y` to Picobot's world, use the following command:
 ```
 # add (X,Y) DYNA
 ```
-However, you can also alter the duration that the cell appears and disappear by using certain flags, in addition to when the cell shows up. If you want to set the duration to be `A` and the offset to be `B`, use the following command:
+
+💥 However, you can also alter the duration that the cell appears and disappear by using certain flags, in addition to when the cell shows up. If you want to set the duration to be `A` and the offset to be `B`, use the following command:
 ```
 # add (X,Y) DYNA d=A o=B
 ```
 Dyna commands also work with lines and grids.
-`sub` commands work just like the dyna `add` commands but are inverted.
+
+💥 `sub` commands work just like the dyna `add` commands but are inverted.
 
 ### Wrap-Around Functionality
 
