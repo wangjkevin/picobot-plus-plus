@@ -28,7 +28,7 @@ To delete a line on row `X`, use the same command, replacing `add` with `sub`.
 ```
 # add (*,Y)
 ```
-To delete a line on row `Y`, use the same command, replacing `add` with `sub`.
+To delete a line on column `Y`, use the same command, replacing `add` with `sub`.
 
 _(You can think of the `*` as "anything", taking inspiration from RegExes :))_
 
