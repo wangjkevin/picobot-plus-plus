@@ -66,6 +66,8 @@ In addition to star commands, there are also _dyna_ commands! Dyna commands allo
 The duration and offset inputs are based on _rules_, meaning that the cell will toggle on and off every `A` rules, with an offset of `B` rules at the very beginning of Picobot's traversal.
 _(Note that the default duration is `25` rules, and the default offset is `0` rules.)_
 
+💥 Dyna commands also work with lines and grids.
+
 💥 `sub` commands work just like the dyna `add` commands, but are inverted. For example, the command
 ```
 # sub (X,*) DYNA d=40
