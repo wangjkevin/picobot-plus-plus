@@ -78,19 +78,19 @@ will initially turn the line on row `X` _off_ for `40` rule executions, but then
 
 #### Examples 🏋🏼
 
-###### Example 1:
+##### Example 1:
 ```
 # add (2-5, 8-9) DYNA d=40 o=3
 ```
 creates a _dynamic_ rectangle of length `4` and width `2` with its top-right corner at row `2`, column `8`. It will stay on the grid for `3` rule executions, and then begin its toggling on/off process, starting by staying on for `40` rule executions, then toggling off, etc.
 
-###### Example 2:
+##### Example 2:
 ```
 # sub (2-5, *)
 ```
 deletes rows `2` through `5`.
 
-###### Example 3:
+##### Example 3:
 ```
 # sub (10-23, *) DYNA
 ```
