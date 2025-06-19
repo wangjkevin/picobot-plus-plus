@@ -875,6 +875,13 @@ function updateDynawalls() {
 		var nonWallColor = (visited.has(`(${wall.row}, ${wall.col})`))? VISITED_COLOR : CLEAR_COLOR;
 
 		var color = (show)? WALL_COLOR : nonWallColor;
+
+		// don't destroy the robot!
+		if (wall.row == robot.row && wall.col == robot.col) {
+			continue;
+		}
+
+		// otherwise we can safely continue...
 		updateCellColor(wall.row, wall.col, color);
 	}
 }
@@ -1176,6 +1183,35 @@ function getDurationAndOffset(ruleStr) {
 	return [duration, offset];
 }
 
+/* getNumsBetween takes in two arguments, (int) `num1` and (int) `num2`, and returns a list
+ * of the numbers between `num1` and `num2`, inclusive
+ */
+function getNumsBetween(num1, num2) {
+	var nums = [];
+	for (let i = num1; i <= num2; i++) {
+		nums.push(i);
+	}
+	return nums;
+}
+
+/* getIndices takes in one argument, (string) rangeStr, and returns an array of the rows or cols as indicated
+ * by rangeStr
+ */
+function getIndices(rangeStr) {
+	if (rangeStr.trim() === "*") {  // entire width
+		return [...Array(MAXROWS).keys()];
+	} else if (rangeStr.includes("-")) {  // number range
+		var dashIndex = rangeStr.indexOf("-");
+		
+		var firstNum = parseInt(rangeStr.substring(0, dashIndex));
+		var secondNum = parseInt(rangeStr.substring(dashIndex + 1));
+
+		return getNumsBetween(firstNum, secondNum);
+	}
+	
+	return [rangeStr];
+}
+
 /* processHashtagCommands takes in four arguments:
  *     - (string) ruleStr
  *     - (int) row
@@ -1186,8 +1222,8 @@ function getDurationAndOffset(ruleStr) {
  * star and dyna commands
  */
 function processHashtagCommands(ruleStr, row, col, color) {
-	var rows = (row.trim() === "*")? [...Array(MAXROWS).keys()] : [row];
-	var cols = (col.trim() === "*")? [...Array(MAXCOLS).keys()] : [col];
+	var rows = getIndices(row);
+	var cols = getIndices(col);
 
 	for (let r of rows) {
 		for (let c of cols) {
@@ -1206,11 +1242,11 @@ function processHashtagCommands(ruleStr, row, col, color) {
 			}
 			else {
 				// don't destroy the robot!
-				if (row == robot.row && col == robot.col) {
+				if (r == robot.row && c == robot.col) {
 					continue;
 				}
 				// otherwise we can safely pass through...
-				updateCellColor(parseInt(row), parseInt(col), color);
+				updateCellColor(parseInt(r), parseInt(c), color);
 			}
 		}
 	}
