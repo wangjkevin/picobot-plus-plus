@@ -52,7 +52,7 @@ Or delete the whole grid with this:
 
 #### Dyna Commands 💣
 
-In addition to star commands, there are also _dyna_ commands! Dyna commands allow for _dynamic_ walls.
+In addition to star commands, there are also _dyna_ commands! Dyna commands allow for _dynamic_ obstacles.
 
 💥 The `DYNA` keyword appended to the end of a hashtag command turns it into a _dyna_ command. To add a dynamic cell on row `X`, column `Y` to Picobot's world, use the following command:
 ```
@@ -66,15 +66,13 @@ In addition to star commands, there are also _dyna_ commands! Dyna commands allo
 The duration and offset inputs are based on _rules_, meaning that the cell will toggle on and off every `A` rules, with an offset of `B` rules at the very beginning of Picobot's traversal.
 _(Note that the default duration is `25` rules, and the default offset is `0` rules.)_
 
-💥 Dyna commands also work with lines and grids.
+💥 Dyna commands also work with other obstacles, like lines and line segments.
 
 💥 `sub` commands work just like the dyna `add` commands, but are inverted. For example, the command
 ```
 # sub (X,*) DYNA d=40
 ```
 will initially turn the line on row `X` _off_ for `40` rule executions, but then toggle the line back on for `40` rule executions, toggle the line off for `40` rule executions, etc.
-
-💥 Dyna commands also work with lines and grids.
 
 #### Examples 🏋🏼
 
