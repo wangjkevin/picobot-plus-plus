@@ -95,7 +95,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 					</tr>
 
 				</tbody>
+
 			</table>
+
+			<div style="text-align: center; margin: 0.5rem;">
+
+				<input name="Speed" id="speed-slider" min="0" max="100" 
+				oninput="changeSpeed(this.max - this.value);"
+				type="range">
+				<div>Speed Slider</div>
+
+			</div>
+
 
 			<table style="width: 100%; text-align: center; background-color: rgb(238, 238, 170);">
 				<tbody>
@@ -162,7 +173,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 						<td>
 						  							  <center><b>Rules</b></center>
 						  							  
-<textarea name="rules" id="rules" rows="20" cols="60" style="font-family: courier; font-weight: bold;"># 
+<textarea name="rules" id="rules" rows="20" cols="60" style="font-family: courier; font-weight: bold;">
+"""
+Welcome to Picobot!
+"""
+
+#
 # Hashtag lines are optional comments
 #
 
@@ -272,6 +288,9 @@ var CLEAR_COLOR = 0
 // docstring symbols 
 SINGLE_QUOTES_DOCSTR_MARKER = "\'\'\'"
 DOUBLE_QUOTES_DOCSTR_MARKER = "\"\"\""
+
+// set the default value of the speed slider
+document.getElementById("speed-slider").value = TIMING_DELAY;
 
 // for dynamic walls (coined "dynawalls")
 // keep track of all the dynamic walls currently in play
@@ -464,6 +483,8 @@ RULE_OTHERACTION = 2;
 RULE_LINENUM = 3;
 RULE_TEXT = 4;
 RULE_COOKIE = 5; // index of the string the user typed
+
+var isRunning = false;
 
 /* cookieLocation takes in two arguments, (int) `row` and (int) `col`, and returns
  * the location of that cookie using a tricky yet simple and neat formula
@@ -895,6 +916,8 @@ function updateDynawalls() {
  */
 function update()
 {
+	console.log(TIMING_DELAY);
+
 	// update dynawalls
 	ruleCounter++;
 	updateDynawalls();
@@ -954,11 +977,20 @@ function update()
 
 var timerID = null
 
+function changeSpeed(newSpeed) {
+	TIMING_DELAY = newSpeed;
+	if (isRunning) {
+		clearTimeout(timerID);
+		timerID = setInterval("update()", TIMING_DELAY)
+	}
+}
+
 /* go takes in no arguments and is the heart and soul of Picobot...it calls `update`
  * every `TIMING_DELAY` milliseconds
  */
 function go()
 {
+	isRunning = true;
 	clearInterval(timerID);
 	timerID=setInterval("update()",TIMING_DELAY);
 }
@@ -967,6 +999,7 @@ function go()
  */
 function stop()
 {
+	isRunning = false;
 	clearInterval(timerID);
 }
 
@@ -1318,7 +1351,7 @@ function computeRules(s)
 	console.log(allRules);
 
 	// loop through them all...
-	for (var linenum=0 ; linenum<allRules.length ; ++linenum)
+	for (var linenum = 0 ; linenum < allRules.length ; ++linenum)
 	{
 		// the current rule == the current line's string
 		var ruleStr = String(allRules[linenum]);
