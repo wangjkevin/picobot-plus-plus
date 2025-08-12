@@ -269,6 +269,10 @@ var ROBOT_COLOR = 2
 var WALL_COLOR = 1
 var CLEAR_COLOR = 0
 
+// docstring symbols 
+SINGLE_QUOTES_DOCSTR_MARKER = "\'\'\'"
+DOUBLE_QUOTES_DOCSTR_MARKER = "\"\"\""
+
 // for dynamic walls (coined "dynawalls")
 // keep track of all the dynamic walls currently in play
 var dynawalls = [];
@@ -1162,11 +1166,11 @@ function isAddCommand(hashtagCommand) {
 
 /* getDurationAndOffset takes in a dyna command, (string) `ruleStr`, and gets the duration and offset
  * of the dyna command, if provided. if not provided, the duration defaults to 25 and the offset
- * defaults to 10
+ * defaults to 0
  */
 function getDurationAndOffset(ruleStr) {
 	var duration = 25;  // recommended duration after trial and error
-	var offset = 10;
+	var offset = 0;
 
 	// rudimentary string parsing :,(
 	tokens = ruleStr.split(" ");
@@ -1252,6 +1256,46 @@ function processHashtagCommands(ruleStr, row, col, color) {
 	}
 }
 
+/* removeDocstrings takes in two arguments, (string[]) `allRules` and (string) `docstringSymbol`, 
+ * and parses `allRules` and removes any docstrings in the rules--note that `allRules` is 
+ * passed by object!
+ */
+function removeDocstrings(allRules, docstringSymbol) {
+	for (let i = 0; i < allRules.length; i++) {
+		if (allRules[i].startsWith(docstringSymbol)) {
+			// TWO EDGE CASES:
+
+			// 1: END COMMENT IS ON THE SAME LINE
+
+			if (allRules[i].endsWith(docstringSymbol) && allRules[i].length >= (2 * docstringSymbol.length)) {
+				allRules[i] = "";
+				continue;
+			}
+
+			// 2: END COMMENT IS ON A FUTURE LINE
+
+			let afterRules = allRules.slice(i + 1);  // don't include the current rule
+			for (let j = 0; j < afterRules.length; j++) {
+
+				if (afterRules[j].endsWith(docstringSymbol)) {
+					// +1 since j is zero-based
+					for (let start = i; start <= (i + j + 1); start++) {
+						allRules[start] = "";
+					}
+
+					// decrement as we don't want to skip over the line right after the docstring
+					i--;
+
+					// now break as we don't want to look through stale indices
+					break;
+				}
+
+			}
+
+		}
+	}	
+}
+
 /* computeRules takes in one argument, (string) `s`, and parses `s` and extracts the rules 
  * (including comments!) from s
  */
@@ -1267,16 +1311,19 @@ function computeRules(s)
 
 	// here are all of the typed rules, line-by-line
 	var allRules = s.split('\n');
-	var numberOfLines = allRules.length;
 	var returnmessage = '';
 
+	removeDocstrings(allRules, SINGLE_QUOTES_DOCSTR_MARKER);
+	removeDocstrings(allRules, DOUBLE_QUOTES_DOCSTR_MARKER);
+	console.log(allRules);
+
 	// loop through them all...
-	for (var linenum=0 ; linenum<numberOfLines ; ++linenum)
+	for (var linenum=0 ; linenum<allRules.length ; ++linenum)
 	{
 		// the current rule == the current line's string
 		var ruleStr = String(allRules[linenum]);
 
-		console.log(`read line ${linenum}:`, ruleStr);
+		// console.log(`read line ${linenum}:`, ruleStr);
 
 		returnmessage = "Oops...\n\nOn line number " + linenum + ", which is this:\n   " + ruleStr + "\n\n";
 
@@ -1314,13 +1361,14 @@ function computeRules(s)
 		// throw out anything at or after the first # (commenting...)
 		// (note that this also throws out the hashtag commands, but we rest assured knowing that we don't
 		// need them anymore since we've already parsed them!)
-		var locationOfComment = ruleStr.indexOf('#');
-		if (locationOfComment != -1)   // there _was_ a comment
+		var locationOfHashtagComment = ruleStr.indexOf('#');
+		if (locationOfHashtagComment != -1)   // there _was_ a comment
 		{
 			// this line turns the string into a blank line...
 			// hence erasing the line from the universe :((
-			ruleStr = ruleStr.substring(0,locationOfComment);
+			ruleStr = ruleStr.substring(0,locationOfHashtagComment);
 		}
+
 
 		///////////////////////////////////////////////////////////////
 
