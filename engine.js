@@ -5,7 +5,6 @@
  * 
  */
 
-// internal clock...tick tick tick
 var DEBUG = 0; // set to 0 to turn off debugging
 
 // how big we want our grid to be
@@ -31,17 +30,29 @@ var CLEAR_COLOR = 0
 SINGLE_QUOTES_DOCSTR_MARKER = "\'\'\'"
 DOUBLE_QUOTES_DOCSTR_MARKER = "\"\"\""
 
+NUM_MILLISECS_PER_SEC = 1000
+
+// internal clock...tick tick tick
 MAX_DELAY = 100;
 
 var timingDelay = 20;
+
 // set the default value of the speed slider
 let speedSlider = document.getElementById("speed-slider")
-speedSlider.oninput = (function () { clearTimeout(timerID); changeSpeed(Number(speedSlider.value)); });
+speedSlider.oninput = (function () { 
+	clearTimeout(timerID); 
+	changeSpeed(Number(speedSlider.value)); 
+	updateStepsPerSec();
+});
 speedSlider.min = String(0);
 speedSlider.max = String(MAX_DELAY);
 speedSlider.value = String(MAX_DELAY - timingDelay);
+speedSlider.style.width = "350px";
+updateStepsPerSec();
 
-
+function updateStepsPerSec() {
+	document.getElementById("rate").textContent = `Speed: ${(NUM_MILLISECS_PER_SEC / timingDelay).toFixed(2)} steps/sec`
+}
 
 // for dynamic walls (coined "dynawalls")
 // keep track of all the dynamic walls currently in play
@@ -1422,6 +1433,5 @@ changeMap(1);
 
 
 } catch(e) {
-for (var i in e)
-	alert(e[i]);
+	for (var i in e) alert(e[i]);
 }
